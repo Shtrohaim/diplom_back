@@ -17,5 +17,14 @@
 // export { default as sakha } from './getSakhaMNO.js';
 // export { default as alania } from './getAlaniaMNO.js';
 // export { default as tatar } from './getTatarMNO.js';
-export { default as tuva } from './getTuvaMNO.js';
-export { default as udmur } from './getUdmurMNO.js';
+// export { default as tuva } from './getTuvaMNO.js';
+// export { default as udmur } from './getUdmurMNO.js';
+// export { default as chech } from './getChechMNO.js';
+// export { default as chuvash } from './getChuvashMNO.js';
+// export { default as altkray } from './getAltKrayMNO.js';
+// export { default as zbaykray } from './getZbayKray.js';
+// export { default as kamkray } from './getKamKrayMNO.js';
+// export { default as krasnodarkray } from './getKrasnodarKrayMNO.js';
+export { default as permkray } from './getPermKrayMNO.js';
+export { default as primorsk } from './getPrimorskMNO.js';
+export { default as khabarkray } from './getHabarKrayMNO.js';

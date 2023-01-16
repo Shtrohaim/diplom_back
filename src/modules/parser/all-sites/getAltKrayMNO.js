@@ -16,7 +16,7 @@ const MONTHS = {
     '12':'Декабря' }
 
 const scraperObject = {
-    url: 'https://monrt.rtyva.ru/index.php/ru/novosti',
+    url: 'http://www.educaltai.ru/news/',
     async scraper(browser){
         let page = await browser.newPage();
 		console.log(`Navigating to ${this.url}...`);
@@ -26,10 +26,10 @@ const scraperObject = {
             timeout: 0
         });
 		// Wait for the required DOM to be rendered
-		await page.waitForSelector('.blog');
+		await page.waitForSelector('#content .center_col .news_list');
 		// Get the link to all the required books
-		let urls = await page.$$eval('.blog .items-leading, .blog .items-row', links => {
-			links = links.map(el => el.querySelector('.comments-link').href)
+		let urls = await page.$$eval('#content .center_col .news_list .news_item', links => {
+			links = links.map(el => el.querySelector('.name').href)
 			return links;
 		});
 
@@ -42,32 +42,25 @@ const scraperObject = {
 				timeout: 0
 			});
 
-			dataObj['newsTittle'] = await newPage.$eval('.art-post .art-postheader', text => text.textContent.replace(/(\r\n\t|\n|\r|\t)/gm, "").trim());
-			dataObj['newsDate'] = await newPage.$eval('.art-post .art-postdateicon', text => text.textContent.split(' ')[1]);
+			dataObj['newsTittle'] = await newPage.$eval('.title_page h1', text => text.textContent.replace(/(\r\n\t|\n|\r|\t)/gm, "").trim());
+			dataObj['newsDate'] = await newPage.$eval('.news-detail .news-date-time', text => text.textContent);
 
             let dateSplit = dataObj['newsDate'].split('.');
 
             dataObj['newsDate'] = dateSplit[0] + " " + MONTHS[dateSplit[1]] + " " + dateSplit[2];
 
-	        dataObj['imageUrl'] = await newPage.$$eval('.art-article p:nth-child(2) img', img => {
+	        dataObj['imageUrl'] = await newPage.$$eval('.news-detail img', img => {
                 img = img.map(el => el.src);
                 return img
             });
 
-			dataObj['newsDesc'] = await newPage.$$eval('.art-article p', div => {
-				div = div.map(el => {
-                    if(el.querySelector('script') === null){
-                        el = el.textContent.replace(/(\r\t|\r|\t)/gm, "").replace(/(\n)/gm, "<br>").trim()
-                    }else{
-                        el = ""
-                    }
-                    return el;
-                });
+			dataObj['newsDesc'] = await newPage.$$eval('.news-detail > p, .news-detail > div', div => {
+				div = div.map(el => el.textContent.replace(/(\r\t|\r|\t)/gm, "").replace(/(\n)/gm, "<br>").trim());
 				return div;
 			});
 
             if(dataObj['newsDesc'].length === 0){
-                dataObj['newsDesc'] = await newPage.$eval('.art-article', div => [ div.textContent.replace(/(\r\t|\r|\t)/gm, "").replace(/(\n)/gm, "<br>").trim()])
+                dataObj['newsDesc'] = await newPage.$eval('.news-detail', div => [ div.textContent ] );
             }
 
 			dataObj['url'] = link;
@@ -80,7 +73,7 @@ const scraperObject = {
 
 		urls = urls.reverse();
 		for(let link in urls){
-			await checkTable.checkTable(urls[link], 'news_tuva_mno').then((res) =>{
+			await checkTable.checkTable(urls[link], 'news_altkray_mno').then((res) =>{
 				check[urls[link]] = res
 			}).catch((err) => {
 				console.log("Promise checkTable error: " + err);
@@ -93,7 +86,7 @@ const scraperObject = {
 		
 		}
 		if(scrapedData.length !== 0){
-			createTable(scrapedData, 'news_tuva_mno');
+			createTable(scrapedData, 'news_altkray_mno');
 		}    
 		await page.close();	
     }
