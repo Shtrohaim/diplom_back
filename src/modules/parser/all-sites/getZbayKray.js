@@ -1,19 +1,6 @@
 import createTable from '../../database/createNewsTable.js';
 import checkTable from '../../database/checkURL.js';
-
-const MONTHS = {
-    '01':'Января',
-    '02':'Февраля',
-    '03':'Марта',
-    '04':'Апреля',
-    '05':'Майа',
-    '06':'Июня',
-    '07':'Июля',
-    '08':'Августа',
-    '09':'Сентября',
-    '10':'Октября',
-    '11':'Ноября',
-    '12':'Декабря' }
+import changeNumMonth from '../constant/changeNumMonth.js';
 
 const scraperObject = {
     url: 'https://minobr.75.ru/',
@@ -43,14 +30,12 @@ const scraperObject = {
 			});
 
 			dataObj['newsTittle'] = await newPage.$eval('.page-content h1', text => text.textContent.replace(/(\r\n\t|\n|\r|\t)/gm, "").trim());
+			
 			dataObj['newsDate'] = await newPage.$$eval('.page-content .cont-main > div', text => {
                 text = text[0].textContent.split(',')[0]
                 return text
             });
-
-            let dateSplit = dataObj['newsDate'].split('.');
-
-            dataObj['newsDate'] = dateSplit[0] + " " + MONTHS[dateSplit[1]] + " " + dateSplit[2];
+            dataObj['newsDate'] = changeNumMonth.changeMonth(dataObj['newsDate']);
 
 	        let allImages = await newPage.$$eval('.cont-main img', img => {
                 img = img.map(el => el.src);

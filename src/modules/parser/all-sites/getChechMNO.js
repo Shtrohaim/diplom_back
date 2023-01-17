@@ -1,19 +1,6 @@
 import createTable from '../../database/createNewsTable.js';
 import checkTable from '../../database/checkURL.js';
-
-const MONTHS = {
-    'янв':'Января',
-    'фев':'Февраля',
-    'мар':'Марта',
-    'апр':'Апреля',
-    'май':'Майа',
-    'июн':'Июня',
-    'июл':'Июля',
-    'авг':'Августа',
-    'сен':'Сентября',
-    'окт':'Октября',
-    'ноя':'Ноября',
-    'дек':'Декабря' }
+import changeShortStrMonth from '../constant/changeShortStrMonth.js';
 
 const scraperObject = {
     url: 'https://mon95.ru/press-center/news/sobytiya-nedeli',
@@ -44,10 +31,7 @@ const scraperObject = {
 
 			dataObj['newsTittle'] = await newPage.$eval('.wis-common-title h1', text => text.textContent.replace(/(\r\n\t|\n|\r|\t)/gm, "").trim());
 			dataObj['newsDate'] = await newPage.$eval('.wis-certification-documents-box-item .wis-common-date', text => text.textContent);
-
-            let dateSplit = dataObj['newsDate'].split(' ');
-
-            dataObj['newsDate'] = dateSplit[0] + " " + MONTHS[dateSplit[1]] + " " + dateSplit[2];
+            dataObj['newsDate'] = changeShortStrMonth.changeMonth(dataObj['newsDate']);
 
 	        dataObj['imageUrl'] = await newPage.$$eval('.wis-universal-block-aside_right .wis-universal-block-img img', img => {
                 img = img.map(el => el.src);

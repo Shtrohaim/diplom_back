@@ -3,7 +3,7 @@ import checkTable from '../../database/checkURL.js';
 import changeNumMonth from '../constant/changeNumMonth.js';
 
 const scraperObject = {
-    url: 'https://minobr.krasnodar.ru/news/common',
+    url: 'https://depobr.gov35.ru/vedomstvennaya-informatsiya/novosti/',
     async scraper(browser){
         let page = await browser.newPage();
 		console.log(`Navigating to ${this.url}...`);
@@ -13,13 +13,12 @@ const scraperObject = {
             timeout: 0
         });
 		// Wait for the required DOM to be rendered
-		await page.waitForSelector('.news');
+		await page.waitForSelector('.news-list');
 		// Get the link to all the required books
-		let urls = await page.$$eval('.news .news__inner .news__news-tab .news-item', links => {
-			links = links.map(el => el.href)
+		let urls = await page.$$eval('.one-news-block, .mobile-news', links => {
+			links = links.map(el => el.querySelector('a').href)
 			return links;
 		});
-
 
 		let pagePromise = (link) => new Promise(async(resolve, reject) => {
 			let dataObj = {};
@@ -29,27 +28,24 @@ const scraperObject = {
 				timeout: 0
 			});
 
-			dataObj['newsTittle'] = await newPage.$eval('.title-tabs .title', text => text.textContent.replace(/(\r\n\t|\n|\r|\t)/gm, "").trim());
-            
-			dataObj['newsDate'] = await newPage.$eval('.news-detail-page__date', text => text.textContent.split(':')[1].trim());
+			dataObj['newsTittle'] = await newPage.$$eval('.news-detail > span', text => text[2].textContent.replace(/(\r\n\t|\n|\r|\t)/gm, "").trim());
+			
+			dataObj['newsDate'] = await newPage.$$eval('.news-detail > span', text => text[0].textContent.split(': ')[1]);
             dataObj['newsDate'] = changeNumMonth.changeMonth(dataObj['newsDate']);
 
-	        let allImages = await newPage.$$eval('.swiper img', img => {
+	        dataObj['imageUrl'] = await newPage.$$eval('.news-detail .detail_picture', img => {
                 img = img.map(el => el.src);
                 return img
             });
 
-            dataObj['imageUrl'] = [];
-            allImages.forEach((element) => {
-                    if (!dataObj['imageUrl'].includes(element)) {
-                        dataObj['imageUrl'].push(element);
-                    }
-            });
-
-			dataObj['newsDesc'] = await newPage.$$eval('.news-detail-page__article p', div => {
+			dataObj['newsDesc'] = await newPage.$$eval('.news-detail > div > p', div => {
 				div = div.map(el => el.textContent.replace(/(\r\t|\r|\t)/gm, "").replace(/(\n)/gm, "<br>").trim());
 				return div;
 			});
+
+            if(dataObj['newsDesc'].length === 0){
+                dataObj['newsDesc'] = await newPage.$$eval('.news-detail > div', div => [ div[0].textContent ] );
+            }
 
 			dataObj['url'] = link;
 			resolve(dataObj);
@@ -61,7 +57,7 @@ const scraperObject = {
 
 		urls = urls.reverse();
 		for(let link in urls){
-			await checkTable.checkTable(urls[link], 'news_krasnodarkray_mno').then((res) =>{
+			await checkTable.checkTable(urls[link], 'news_vologodobl_mno').then((res) =>{
 				check[urls[link]] = res
 			}).catch((err) => {
 				console.log("Promise checkTable error: " + err);
@@ -74,7 +70,7 @@ const scraperObject = {
 		
 		}
 		if(scrapedData.length !== 0){
-			createTable(scrapedData, 'news_krasnodarkray_mno');
+			createTable(scrapedData, 'news_vologodobl_mno');
 		}    
 		await page.close();	
     }

@@ -25,6 +25,12 @@
 // export { default as zbaykray } from './getZbayKray.js';
 // export { default as kamkray } from './getKamKrayMNO.js';
 // export { default as krasnodarkray } from './getKrasnodarKrayMNO.js';
-export { default as permkray } from './getPermKrayMNO.js';
-export { default as primorsk } from './getPrimorskMNO.js';
-export { default as khabarkray } from './getHabarKrayMNO.js';
+// export { default as permkray } from './getPermKrayMNO.js';
+// export { default as primorsk } from './getPrimorskMNO.js';
+// export { default as khabarkray } from './getHabarKrayMNO.js';
+// export { default as amurobl } from './getAmurOblMNO.js';
+// export { default as arkhobl } from './getArkhOblMNO.js';
+// export { default as astrobl } from './getAstrObl.js';
+export { default as bryaobl } from './getBryaOblMNO.js';
+export { default as vladimobl } from './getVladimOblMNO.js';
+export { default as vologodobl } from './getVologodOblMNO.js';

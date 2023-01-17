@@ -1,19 +1,6 @@
 import createTable from '../../database/createNewsTable.js';
 import checkTable from '../../database/checkURL.js';
-
-const MONTHS = {
-    '01':'Января',
-    '02':'Февраля',
-    '03':'Марта',
-    '04':'Апреля',
-    '05':'Майа',
-    '06':'Июня',
-    '07':'Июля',
-    '08':'Августа',
-    '09':'Сентября',
-    '10':'Октября',
-    '11':'Ноября',
-    '12':'Декабря' }
+import changeNumMonth from '../constant/changeNumMonth.js';
 
 
 const scraperObject = {
@@ -43,12 +30,10 @@ const scraperObject = {
                 timeout: 0
             });
 			dataObj['newsTittle'] = await newPage.$eval('.page__title h1', text => text.textContent.replace(/(\r\n\t|\n|\r|\t)/gm, "").trim());
+			
 			dataObj['newsDate'] = await newPage.$eval('.news__single__more .time time', text => text.textContent.split(',')[0]);
-
-            let dateSplit = dataObj['newsDate'].split('.');
-
-            dataObj['newsDate'] = dateSplit[0] + " " + MONTHS[dateSplit[1]] + " " + dateSplit[2];
-
+            dataObj['newsDate'] = changeNumMonth.changeMonth(dataObj['newsDate']);
+			
 	        dataObj['imageUrl'] = await newPage.$$eval('.fotorama .fotorama__nav-wrap img', img => {
                 img = img.map(el => el.src);
                 return img
