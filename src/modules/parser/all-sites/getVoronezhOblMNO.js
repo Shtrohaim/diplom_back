@@ -3,7 +3,7 @@ import checkTable from '../../database/checkURL.js';
 import changeNumMonth from '../constant/changeNumMonth.js';
 
 const scraperObject = {
-    url: 'https://depobr.gov35.ru/vedomstvennaya-informatsiya/novosti/',
+    url: 'https://www.govvrn.ru/novosti/-/~/id/1122584',
     async scraper(browser){
         let page = await browser.newPage();
 		console.log(`Navigating to ${this.url}...`);
@@ -13,10 +13,10 @@ const scraperObject = {
             timeout: 0
         });
 		// Wait for the required DOM to be rendered
-		await page.waitForSelector('.news-list');
+		await page.waitForSelector('.portlet-column');
 		// Get the link to all the required books
-		let urls = await page.$$eval('.one-news-block, .mobile-news', links => {
-			links = links.map(el => el.querySelector('a').href)
+		let urls = await page.$$eval('.portlet-column .news-list .news-list-item > a', links => {
+			links = links.map(el => el.href)
 			return links;
 		});
 
@@ -28,23 +28,23 @@ const scraperObject = {
 				timeout: 0
 			});
 
-			dataObj['newsTittle'] = await newPage.$$eval('.news-detail > span', text => text[2].textContent.replace(/(\r\n\t|\n|\r|\t)/gm, "").trim());
+			dataObj['newsTittle'] = await newPage.$eval('.news-detail h3', text => text.textContent.replace(/(\r\n\t|\n|\r|\t)/gm, "").trim());
 			
-			dataObj['newsDate'] = await newPage.$$eval('.news-detail > span', text => text[0].textContent.split(': ')[1]);
+			dataObj['newsDate'] = await newPage.$eval('.news-detail > .news-extras > .news-extra > span', text => text.textContent.split(' ')[0]);
             dataObj['newsDate'] = changeNumMonth.changeMonth(dataObj['newsDate']);
 
-	        dataObj['imageUrl'] = await newPage.$$eval('.news-detail .detail_picture', img => {
+	        dataObj['imageUrl'] = await newPage.$$eval('.news-images .rsContainer img', img => {
                 img = img.map(el => el.src);
                 return img
             });
 
-			dataObj['newsDesc'] = await newPage.$$eval('.news-detail > div > p', div => {
+			dataObj['newsDesc'] = await newPage.$$eval('.news-content > p', div => {
 				div = div.map(el => el.textContent.replace(/(\r\t|\r|\t)/gm, "").replace(/(\n)/gm, "<br>").trim());
 				return div;
 			});
 
             if(dataObj['newsDesc'].length === 0){
-                dataObj['newsDesc'] = await newPage.$$eval('.news-detail > div', div => [ div[0].textContent.replace(/(\n)/gm, "<br>").trim() ] );
+                dataObj['newsDesc'] = await newPage.$eval('.news-content', div => [ div.textContent.replace(/(\n)/gm, "<br>").trim() ] );
             }
 
 			dataObj['url'] = link;
@@ -57,7 +57,7 @@ const scraperObject = {
 
 		urls = urls.reverse();
 		for(let link in urls){
-			await checkTable.checkTable(urls[link], 'news_vologodobl_mno').then((res) =>{
+			await checkTable.checkTable(urls[link], 'news_voronezhobl_mno').then((res) =>{
 				check[urls[link]] = res
 			}).catch((err) => {
 				console.log("Promise checkTable error: " + err);
@@ -70,7 +70,7 @@ const scraperObject = {
 		
 		}
 		if(scrapedData.length !== 0){
-			createTable(scrapedData, 'news_vologodobl_mno');
+			createTable(scrapedData, 'news_voronezhobl_mno');
 		}    
 		await page.close();	
     }

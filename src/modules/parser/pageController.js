@@ -11,6 +11,7 @@ export default async function scrapeAll(browserInstance){
 	}
 	catch(err){
 		console.log("Could not resolve the browser instance => ", err);
+		browser.close();
 	}
 }
 

@@ -12,10 +12,16 @@ app.use(mysqlAdmin(app));
     res.send('<div>Общая сумма поддержанных проектов составила 1 500 000 рублей. <br>Список победителей утвержден приказом министерства образования Красноярского края от 12.12.2022 № 816-11-05. <br>Гранты будут перечислены победителям в начале 2023 года, реализация проектов продлится в течение календарного 2023 года. <br>Благодарим участников конкурса за представленные проектные идеи, поздравляем победителей конкурса 2022 года. <br></div>');
 });
 
+const ParsingActivate = () => {
+   let browserInstance = startBrowser.startBrowser();
+   scraperController(browserInstance)
+}
 
-let browserInstance = startBrowser.startBrowser();
+ParsingActivate()
 
-scraperController(browserInstance)
+
+setInterval(ParsingActivate, 7200000)
+
 
  app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)

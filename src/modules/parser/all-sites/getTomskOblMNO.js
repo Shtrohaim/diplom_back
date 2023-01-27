@@ -1,9 +1,8 @@
 import createTable from '../../database/createNewsTable.js';
 import checkTable from '../../database/checkURL.js';
-import changeNumMonth from '../constant/changeNumMonth.js';
 
 const scraperObject = {
-    url: 'https://depobr.gov35.ru/vedomstvennaya-informatsiya/novosti/',
+    url: 'https://edu.tomsk.gov.ru/news/front',
     async scraper(browser){
         let page = await browser.newPage();
 		console.log(`Navigating to ${this.url}...`);
@@ -13,14 +12,19 @@ const scraperObject = {
             timeout: 0
         });
 		// Wait for the required DOM to be rendered
-		await page.waitForSelector('.news-list');
+		await page.waitForSelector('.news_list');
 		// Get the link to all the required books
-		let urls = await page.$$eval('.one-news-block, .mobile-news', links => {
+		let urls = await page.$$eval('.news_list li > div', links => {
 			links = links.map(el => el.querySelector('a').href)
 			return links;
 		});
 
-		let pagePromise = (link) => new Promise(async(resolve, reject) => {
+        let dates = await page.$$eval('.news_list li > div', links => {
+			links = links.map(el => el.querySelector('.date').textContent.split(',')[0])
+			return links;
+		});
+
+		let pagePromise = (link, date) => new Promise(async(resolve, reject) => {
 			let dataObj = {};
 			let newPage = await browser.newPage();
 			await newPage.goto(link, {
@@ -28,23 +32,22 @@ const scraperObject = {
 				timeout: 0
 			});
 
-			dataObj['newsTittle'] = await newPage.$$eval('.news-detail > span', text => text[2].textContent.replace(/(\r\n\t|\n|\r|\t)/gm, "").trim());
+			dataObj['newsTittle'] = await newPage.$eval('.content h2', text => text.textContent.replace(/(\r\n\t|\n|\r|\t)/gm, "").trim());
 			
-			dataObj['newsDate'] = await newPage.$$eval('.news-detail > span', text => text[0].textContent.split(': ')[1]);
-            dataObj['newsDate'] = changeNumMonth.changeMonth(dataObj['newsDate']);
+			dataObj['newsDate'] = date;
 
-	        dataObj['imageUrl'] = await newPage.$$eval('.news-detail .detail_picture', img => {
-                img = img.map(el => el.src);
+            dataObj['imageUrl'] = await newPage.$$eval('.gallery-content > div a', img => {
+                img = img.map(el => el.href);
                 return img
             });
-
-			dataObj['newsDesc'] = await newPage.$$eval('.news-detail > div > p', div => {
+         
+			dataObj['newsDesc'] = await newPage.$$eval('.text_body p', div => {
 				div = div.map(el => el.textContent.replace(/(\r\t|\r|\t)/gm, "").replace(/(\n)/gm, "<br>").trim());
-				return div;
+				return div;  
 			});
 
             if(dataObj['newsDesc'].length === 0){
-                dataObj['newsDesc'] = await newPage.$$eval('.news-detail > div', div => [ div[0].textContent.replace(/(\n)/gm, "<br>").trim() ] );
+                dataObj['newsDesc'] = await newPage.$eval('.text_body', div => [ div.textContent.replace(/(\r\t|\r|\t)/gm, "").replace(/(\n)/gm, "<br>").trim() ]);
             }
 
 			dataObj['url'] = link;
@@ -56,21 +59,22 @@ const scraperObject = {
 		let check = {};
 
 		urls = urls.reverse();
+        dates = dates.reverse();
 		for(let link in urls){
-			await checkTable.checkTable(urls[link], 'news_vologodobl_mno').then((res) =>{
+			await checkTable.checkTable(urls[link], 'news_tomskobl_mno').then((res) =>{
 				check[urls[link]] = res
 			}).catch((err) => {
 				console.log("Promise checkTable error: " + err);
 			})
 
 			if(check[urls[link]]){
-				let currentPageData = await pagePromise(urls[link]);
+				let currentPageData = await pagePromise(urls[link], dates[link]);
 				scrapedData.push(currentPageData)
 			}
 		
 		}
 		if(scrapedData.length !== 0){
-			createTable(scrapedData, 'news_vologodobl_mno');
+			createTable(scrapedData, 'news_tomskobl_mno');
 		}    
 		await page.close();	
     }
