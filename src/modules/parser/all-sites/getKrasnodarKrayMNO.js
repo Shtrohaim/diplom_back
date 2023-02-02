@@ -34,7 +34,7 @@ const scraperObject = {
 			dataObj['newsDate'] = await newPage.$eval('.news-detail-page__date', text => text.textContent.split(':')[1].trim());
             dataObj['newsDate'] = changeNumMonth.changeMonth(dataObj['newsDate']);
 
-	        let allImages = await newPage.$$eval('.swiper img', img => {
+	        let allImages = await newPage.$$eval('.swiper > .swiper__container:not(.swiper__thumbs-container) > .swiper__wrapper > .swiper__slide img', img => {
                 img = img.map(el => el.src);
                 return img
             });
@@ -46,10 +46,17 @@ const scraperObject = {
                     }
             });
 
-			dataObj['newsDesc'] = await newPage.$$eval('.news-detail-page__article p', div => {
+			dataObj['newsDesc'] = await newPage.$$eval('.news-detail-page__article > p', div => {
 				div = div.map(el => el.textContent.replace(/(\r\t|\r|\t)/gm, "").replace(/(\n)/gm, "<br>").trim());
 				return div;
 			});
+
+			if(dataObj['newsDesc'].length === 0) {
+				dataObj['newsDesc'] = await newPage.$$eval('.news-detail-page__article', div => {
+					div = div.map(el => el.textContent.replace(/(\r\t|\r|\t)/gm, "").replace(/(\n)/gm, "<br>").trim());
+					return div;
+				});
+			}
 
 			dataObj['url'] = link;
 			resolve(dataObj);

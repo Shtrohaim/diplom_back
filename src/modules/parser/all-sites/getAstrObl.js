@@ -43,24 +43,30 @@ const scraperObject = {
             });
 			dataObj['newsTittle'] = await newPage.$eval('.sub_header .title h2', text => text.textContent.replace(/(\r\n\t|\n|\r|\t)/gm, "").trim());
 			dataObj['newsDate'] = await newPage.$eval('.content__body_main .item > span', text => text.textContent);
-            
             if(dataObj['newsDate'].split(" ")[0] === "Сегодня"){
                 let date = new Date(Date.now())
                 dataObj['newsDate'] = date.getDate() + " " + MONTHS[date.getMonth()] + " " + date.getFullYear();
             } else if(dataObj['newsDate'].split(" ")[0] === "Вчера"){
                 let date = new Date(Date.now() - 86400000)
                 dataObj['newsDate'] = date.getDate() + " " + MONTHS[date.getMonth()] + " " + date.getFullYear();
-            }else if(dataObj['newsDate'].split(" ")[0] === "Позавчера"){
+            }else if(dataObj['newsDate'].split(",")[0].split(" ").length === 1){
                 let date = new Date(Date.now() - 86400000 * 2)
                 dataObj['newsDate'] = date.getDate() + " " + MONTHS[date.getMonth()] + " " + date.getFullYear();
             }else{
                 dataObj['newsDate'] = dataObj['newsDate'].split(',')[0]
             }
 
-	        dataObj['imageUrl'] = await newPage.$$eval('.gallery-nav .news_gallery_main img', img => {
+	        let allImages = await newPage.$$eval('.gallery-nav .news_gallery_main img', img => {
                 img = img.map(el => el.src);
                 return img
             })
+
+			dataObj['imageUrl'] = []
+			allImages.forEach((element) => {
+				if (!dataObj['imageUrl'].includes(element)) {
+					dataObj['imageUrl'].push(element);
+				}
+			});
 
 			dataObj['newsDesc'] = await newPage.$$eval('.news-text p', div => {
 				div = div.map(el => el.textContent.replace(/(\r\t|\r|\t)/gm, "").replace(/(\n)/gm, "<br>").trim())

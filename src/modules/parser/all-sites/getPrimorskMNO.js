@@ -33,7 +33,8 @@ const scraperObject = {
                 timeout: 0
             });
 			dataObj['newsTittle'] = await newPage.$eval('.page-title .title', text => text.textContent.replace(/(\r\n\t|\n|\r|\t)/gm, "").trim());
-			dataObj['newsDate'] = date;
+			dataObj['newsDate'] = date.split("вчера —")[1] + new Date().getFullYear();
+			dataObj['newsDate'] = date.split("сегодня —")[1]+ new Date().getFullYear();
 
 	        dataObj['imageUrl'] = await newPage.$$eval('.page-content > div:nth-child(2) > div:nth-child(1) .content-block img', img => {
                 img = img.map(el => el.src);

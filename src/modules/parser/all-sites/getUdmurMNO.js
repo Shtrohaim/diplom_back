@@ -1,6 +1,5 @@
 import createTable from '../../database/createNewsTable.js';
 import checkTable from '../../database/checkURL.js';
-import changeNumMonth from '../constant/changeNumMonth.js';
 
 const scraperObject = {
     url: 'https://udmedu.ru/about/info/news/',
@@ -32,7 +31,6 @@ const scraperObject = {
 			dataObj['newsTittle'] = await newPage.$eval('.welcome h1', text => text.textContent.replace(/(\r\n\t|\n|\r|\t)/gm, "").trim());
 			
 			dataObj['newsDate'] = await newPage.$eval('.news .date', text => text.textContent);
-            dataObj['newsDate'] = changeNumMonth.changeMonth(dataObj['newsDate']);
 
 	        dataObj['imageUrl'] = await newPage.$$eval('.news img', img => {
                 img = img.map(el => el.src);

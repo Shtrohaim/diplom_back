@@ -42,7 +42,7 @@ const scraperObject = {
                 return img
             });
 
-			dataObj['newsDesc'] = await newPage.$$eval('.container > .wrapper > .news-detail div,p,em', div => {
+			dataObj['newsDesc'] = await newPage.$$eval('.container > .wrapper > .news-detail > div:not(.carousel), .container > .wrapper > .news-detail > p, .container > .wrapper > .news-detail > em', div => {
 				div = div.map(el => el.textContent.replace(/(\r\t|\r|\t)/gm, "").replace(/(\n)/gm, "<br>").trim())
 				return div;
 			});
