@@ -3,6 +3,8 @@ import db from '../modules/database/connection.js';
 const getRegionNewsList  = async (tableName, query) => {
 
     const { page, size} = query
+    let { search } = query
+    search = search ? search : ""
     const limit = size ? + size : 10;
     const offset = page ? (page - 1) * limit : 0;
 
@@ -10,7 +12,7 @@ const getRegionNewsList  = async (tableName, query) => {
         throw new Error('Не указано имя таблицы!')
     }
     return new Promise((resolve, reject) => {
-        db.connection.query(`SELECT SQL_CALC_FOUND_ROWS * FROM ${tableName} ORDER BY id DESC LIMIT ${limit} OFFSET ${offset}`, function (err, result, fields) {
+        db.connection.query(`SELECT SQL_CALC_FOUND_ROWS * FROM ${tableName} WHERE title LIKE '%${search}%' ORDER BY id DESC  LIMIT ${limit} OFFSET ${offset}`, function (err, result, fields) {
             if (err) reject('ERROR: Неправильное имя таблицы!');
 
             db.connection.query(`SELECT FOUND_ROWS();`, function (err, res, fields) {
