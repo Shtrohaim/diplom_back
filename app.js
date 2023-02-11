@@ -36,9 +36,6 @@ const ParsingActivate = () => {
    }
 }
 
-
-
-
 // UpdateFipiInfo()
 // ParsingActivate()
 
