@@ -9,9 +9,9 @@ const getScopusDataList  = async (req, res) => {
     }
 }
 
-const getScidirData  = async (req, res) => {
+const getPublisherInfo  = async (req, res) => {
     try{
-        const data = await elsevierServices.getScidirData()
+        const data = await elsevierServices.getPublisherInfo(req.params.issn)
         return res.status(200).json(data)
     }catch(e){
         res.status(500).json(e)
@@ -27,4 +27,4 @@ const getAllSubjects = async (req, res) => {
     }
 }
 
-export default { getScopusDataList , getScidirData, getAllSubjects } 
+export default { getScopusDataList , getPublisherInfo, getAllSubjects } 

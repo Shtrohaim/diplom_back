@@ -11,7 +11,7 @@ router.get('/allRegions', newsController.getAllRegions)
 router.get('/ege', fipiInfoController.getEgeInfo)
 router.get('/oge', fipiInfoController.getOgeInfo)
 router.get('/elsevier/scopusList', elsevierApiController.getScopusDataList)
-router.get('/elsevier/scidir/:issn', elsevierApiController.getScidirData)
+router.get('/elsevier/publisher/:issn', elsevierApiController.getPublisherInfo)
 router.get('/elsevier/subjects', elsevierApiController.getAllSubjects)
 
 export default router;
