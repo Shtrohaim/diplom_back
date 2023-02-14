@@ -18,9 +18,9 @@ const scraperObject = {
 			return links;
 		});
         
-        urls = urls.filter(el => el !== 'https://fipi.ru/ege/videokonsultatsii-razrabotchikov-kim-yege' && el !== 'https://fipi.ru/ege/normativno-pravovye-dokumenty'  && el !== 'https://fipi.ru/ege');
+        urls = urls.filter(el => el !== 'https://fipi.ru/ege/videokonsultatsii-razrabotchikov-kim-yege' && el !== 'https://fipi.ru/ege/normativno-pravovye-dokumenty' && el !== 'https://fipi.ru/ege');
         
-        let description = await page.$eval('.t469 > .t-container > div > .t-descr', html => html.innerHTML)
+        let description = await page.$eval('.t469 > .t-container > div > .t-descr', html => html.innerHTML.replace(/(<br><a)/gm, " <a"))
 
 		let pagePromise = (link) => new Promise(async(resolve, reject) => {
 			let dataObj = {};
@@ -80,7 +80,7 @@ const scraperObject = {
             timeout: 0
         });
 
-        scrapedData.push( { 'pageTitle': await newPage.$eval('.t469__title', text => text.textContent), 'pageDescription' : await newPage.$eval('.t469 > .t-container > div > .t-descr', html => html.innerHTML), 'url': 'https://fipi.ru/ege/normativno-pravovye-dokumenty'} )
+        scrapedData.push( { 'pageTitle': await newPage.$eval('.t469__title', text => text.textContent), 'pageDescription' : await newPage.$eval('.t469 > .t-container > div > .t-descr', html => html.innerHTML.replace(/(<br><a)/gm, " <a")), 'url': 'https://fipi.ru/ege/normativno-pravovye-dokumenty'} )
 
         await newPage.close();
 

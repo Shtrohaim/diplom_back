@@ -16,7 +16,7 @@ const scraperObject = {
 		await page.waitForSelector('.posts__body');
 		// Get the link to all the required books
 		let urls = await page.$$eval('.posts__body article', links => {
-			links = links.map(el => el.querySelector('.post-thumbnail').href)
+			links = links.map(el => el.querySelector('a').href)
 			return links;
 		});
 

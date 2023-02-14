@@ -33,7 +33,7 @@ const scraperObject = {
 			dataObj['newsDate'] = await newPage.$eval('.news-detail .news-date-time', text => text.textContent);
             dataObj['newsDate'] = changeNumMonth.changeMonth(dataObj['newsDate']);
 
-            dataObj['imageUrl'] = await newPage.$eval('.news-detail .detail_picture', img => [ img.src ]);
+            dataObj['imageUrl'] = await newPage.$$eval('.news-detail .detail_picture', img => [ img.src ]);
          
 			dataObj['newsDesc'] = await newPage.$$eval('.news-detail > p', div => {
 				div = div.map(el => el.textContent.replace(/(\r\t|\r|\t)/gm, "").replace(/(\n)/gm, "<br>").trim());
