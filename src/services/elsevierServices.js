@@ -1,18 +1,16 @@
 import request from "request";
 
-const API_KEY = '7f59af901d2d86f78a1fd60c1bf9426a'
+const API_KEY = 'b0945bf621784946be4446031458e9eb'
   
 
 const getScopusDataList = async (query) => {
-    let search = JSON.parse(`${query["search"]}`)
-
     // 'search={field: "aaaaa", type: "ALL"}'
     // 'filter={doctype: [], openaccess: null, SRCTYPE: [] , ... , PUBYEAR: {year: 2023, operator: more}}'
 
     // searchParams = ["ALL","DOI","ISSN", "EISSN", "AUTHOR-NAME", "PUBLISHER"]
     // filterParams = ['DOCTYPE', 'OPENACCESS', 'SRCTYPE', 'SUBJAREA', "PUBYEAR"]
 
-    let encode = `${search["type"]}(${search["field"]})`
+    let encode = `${query["search"]["type"]}(${query["search"]["field"]})`
 
     if(query["filter"]) {
         let filter = JSON.parse(`${query["filter"]}`)
@@ -44,7 +42,6 @@ const getScopusDataList = async (query) => {
     return new Promise((resolve, reject) => {
         let data = {}
         let {limit, offset} = query;
-
         let options = {
             uri: `https://api.elsevier.com/content/search/scopus?query=${encode}&apiKey=${API_KEY}&start=${offset-1}&count=${limit}`,
             method: 'GET',
@@ -58,6 +55,10 @@ const getScopusDataList = async (query) => {
             data['currentPage'] = Number(body['search-results']['opensearch:startIndex']) + 1
             data['totalItems'] = Number(body['search-results']['opensearch:totalResults'])
             data['totalPages'] = Math.ceil(data['totalItems'] / limit);
+            if(data['totalPages'] > 5000 - limit){
+                data['totalPages'] = 5000 - limit
+                data['totalItems'] = (5000 - limit) * limit
+            }
             data['data'] = []
        
             for (const [key, value] of Object.entries(body['search-results']['entry'])) {
