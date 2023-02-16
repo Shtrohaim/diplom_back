@@ -13,9 +13,7 @@ const getScopusDataList = async (query) => {
     let encode = `${query["search"]["type"]}(${query["search"]["field"]})`
 
     if(query["filter"]) {
-        let filter = JSON.parse(`${query["filter"]}`)
-
-        for (const [key, value] of Object.entries(filter)) {
+        for (const [key, value] of Object.entries(query["filter"])) {
             if(value && Array.isArray(value)){
     
                 encode += ` AND ${key}(${value[0]}`
@@ -26,7 +24,7 @@ const getScopusDataList = async (query) => {
                 encode += ')'
             }else if(value && typeof(value) === 'object'){
                 let operator = '='
-                if(value["operator"] === "more") {
+                if(value["operator"] === "greater") {
                     operator = '>'
                 }else if(value["operator"] === "less"){
                     operator = '<'
@@ -35,10 +33,8 @@ const getScopusDataList = async (query) => {
             }else if(value) {
                 encode += ` AND ${key}(${value})`
             }
-            
         }
     }
-
     return new Promise((resolve, reject) => {
         let data = {}
         let {limit, offset} = query;
