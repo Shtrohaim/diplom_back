@@ -37,7 +37,7 @@ const ParsingActivate = () => {
 }
 
 // UpdateFipiInfo()
-ParsingActivate()
+// ParsingActivate()
 
 
 setInterval(ParsingActivate, 7200000)
