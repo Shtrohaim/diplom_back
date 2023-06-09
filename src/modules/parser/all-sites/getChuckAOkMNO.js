@@ -37,8 +37,15 @@ const scraperObject = {
             });
          
 			dataObj['newsDesc'] = await newPage.$$eval('.itemView .itemFullText > p', div => {
-				div = div.map(el => el.textContent.replace(/(\r\t|\r|\t)/gm, "").replace(/(\n)/gm, "<br>").trim());
-				return div;  
+				div = div.map(el => {
+                    if(el.querySelector('script') === null){
+                        el = el.textContent.replace(/(\r\t|\r|\t)/gm, "").replace(/(\n)/gm, "<br>").trim();
+                    }else{
+                        el = "";
+                    }
+                    return el;
+                });
+				return div; 
 			});
 
             if(dataObj['newsDesc'].length === 0){

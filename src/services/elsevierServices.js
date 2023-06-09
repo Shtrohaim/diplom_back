@@ -121,7 +121,9 @@ const getScopusDataList = async (query) => {
                 items['openaccessFlag'] = value['openaccessFlag']
                 items['affiliation'] = value['affiliation']
 
-                data['data'].push(items)
+                if(items['issn'] || items['eIssn']) {
+                    data['data'].push(items)
+                }
             }      
             resolve(data)
         });
