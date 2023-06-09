@@ -1,20 +1,6 @@
 import createTable from '../../database/createNewsTable.js';
 import checkTable from '../../database/checkURL.js';
 
-const MONTHS = {
-    '01':'Января',
-    '02':'Февраля',
-    '03':'Марта',
-    '04':'Апреля',
-    '05':'Майа',
-    '06':'Июня',
-    '07':'Июля',
-    '08':'Августа',
-    '09':'Сентября',
-    '10':'Октября',
-    '11':'Ноября',
-    '12':'Декабря' }
-
 const scraperObject = {
     url: 'https://udmedu.ru/about/info/news/',
     async scraper(browser){
@@ -43,6 +29,7 @@ const scraperObject = {
 			});
 
 			dataObj['newsTittle'] = await newPage.$eval('.welcome h1', text => text.textContent.replace(/(\r\n\t|\n|\r|\t)/gm, "").trim());
+			
 			dataObj['newsDate'] = await newPage.$eval('.news .date', text => text.textContent);
 
 	        dataObj['imageUrl'] = await newPage.$$eval('.news img', img => {

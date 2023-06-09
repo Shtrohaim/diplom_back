@@ -1,21 +1,47 @@
 import express from 'express';
 import mysqlAdmin from 'node-mysql-admin';
 import startBrowser  from './src/modules/parser/startBrowser.js';
-import scraperController from './src/modules/parser/pageController.js';
+import scraperController from './src/controllers/pageController.js';
+import fipiScraper from './src/controllers/fipiBrowserController.js';
+import { api } from './src/routes/router.js';
+import cors from 'cors'
 
 const app = express()
 const port = 3000
 
 app.use(mysqlAdmin(app));
+app.use(express.json())
 
- app.get('/', (req, res) => {
-    res.send('<div>Общая сумма поддержанных проектов составила 1 500 000 рублей. <br>Список победителей утвержден приказом министерства образования Красноярского края от 12.12.2022 № 816-11-05. <br>Гранты будут перечислены победителям в начале 2023 года, реализация проектов продлится в течение календарного 2023 года. <br>Благодарим участников конкурса за представленные проектные идеи, поздравляем победителей конкурса 2022 года. <br></div>');
-});
+app.use(cors());
+
+app.use('/api', api)
+app.use('/img', express.static('./src/data/img/emblems/'))
 
 
-let browserInstance = startBrowser.startBrowser();
+const UpdateFipiInfo = () => {
+   let browserInstance = startBrowser.startBrowser();
+   fipiScraper(browserInstance)
+}
 
-scraperController(browserInstance)
+const ParsingActivate = () => {
+   let browserInstance = startBrowser.startBrowser();
+   scraperController(browserInstance)
+
+   let nowDate = new Date()
+   let needDate = new Date(`${nowDate.getFullYear()}-${nowDate.getMonth() + 1}-2`)
+   nowDate = nowDate.toISOString().split('T')[0]
+   needDate = needDate.toISOString().split('T')[0]
+   if (nowDate === needDate){
+      UpdateFipiInfo()
+   }
+}
+
+// UpdateFipiInfo()
+// ParsingActivate()
+
+
+setInterval(ParsingActivate, 7200000)
+
 
  app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)

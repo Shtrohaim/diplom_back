@@ -31,7 +31,7 @@ const scraperObject = {
 			dataObj['newsDate'] = await newPage.$eval('.meta__item span', text => text.textContent);
 
 	        dataObj['imageUrl'] = await newPage.$$eval('.nXcnN picture img', img => {
-                img = img.map(el => el.src);
+                img = img.map(el => el.src.replace(/(\_350\_)/gm, "_1000_"));
                 return img
             });
 

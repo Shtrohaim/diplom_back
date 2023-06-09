@@ -36,7 +36,10 @@ const scraperObject = {
             });	
 
             if(dataObj['imageUrl'].length === 0){
-                dataObj['imageUrl'] = await newPage.$eval('.page-press__figure-photo img', img => img = img.src);	
+                dataObj['imageUrl'] = await newPage.$$eval('.page-press__figure-photo img', img => {
+					img = img.map(el => el.src)
+					return img;
+				});		
             }
 
 			dataObj['newsDesc'] = await newPage.$$eval('.page-press .row p', div => {

@@ -30,10 +30,22 @@ const scraperObject = {
 			dataObj['newsTittle'] = await newPage.$eval('.section__body-content h1', text => text.textContent.replace(/(\r\n\t|\n|\r|\t)/gm, "").trim());
 			dataObj['newsDate'] = await newPage.$eval('.section__body-content time', text => text.textContent);
 
-	        dataObj['imageUrl'] = await newPage.$$eval('.section__body-content article img', img => {
-                img = img.map(el => el.src);
+			let allImages = await newPage.$$eval('.section__body-content article .more_photo > a', img => {
+                img = img.map(el => el.href);
                 return img
             });
+
+	        allImages = allImages.concat(await newPage.$$eval('.section__body-content article > img', img => {
+                img = img.map(el => el.src);
+                return img
+            }));
+
+			dataObj['imageUrl'] = []
+			allImages.forEach((element) => {
+				if (!dataObj['imageUrl'].includes(element)) {
+					dataObj['imageUrl'].push(element);
+				}
+			});
 
 			dataObj['newsDesc'] = await newPage.$$eval('.news_detail_text p', div => {
 				div = div.map(el => el.textContent.replace(/(\r\t|\r|\t)/gm, "").replace(/(\n)/gm, "<br>").trim())

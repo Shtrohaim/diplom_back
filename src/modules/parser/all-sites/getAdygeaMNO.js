@@ -1,19 +1,6 @@
 import createTable from '../../database/createNewsTable.js';
 import checkTable from '../../database/checkURL.js';
-
-const MONTHS = {
-    '01':'Января',
-    '02':'Февраля',
-    '03':'Марта',
-    '04':'Апреля',
-    '05':'Майа',
-    '06':'Июня',
-    '07':'Июля',
-    '08':'Августа',
-    '09':'Сентября',
-    '10':'Октября',
-    '11':'Ноября',
-    '12':'Декабря' }
+import changeNumMonth from '../constant/changeNumMonth.js';
 
 const scraperObject = {
     url: 'http://www.adygheya.ru/ministers/departments/ministerstvo-obrazovaniya-i-nauki/novosti-ministerstva/',
@@ -43,6 +30,7 @@ const scraperObject = {
             });
 			dataObj['newsTittle'] = await newPage.$eval('.article h1', text => text.textContent.replace(/(\r\n\t|\n|\r|\t)/gm, "").trim());
 			dataObj['newsDate'] = await newPage.$eval('.detail .date', text => text.textContent);
+            dataObj['newsDate'] = changeNumMonth.changeMonth(dataObj['newsDate']);
 
 	        dataObj['imageUrl'] = await newPage.$$eval('.photos img', img => {
                 img = img.map(el => el.src);
@@ -57,12 +45,8 @@ const scraperObject = {
             if(dataObj['newsDesc'].length === 0){
                 dataObj['newsDesc'] = await newPage.$eval('.detail', div => [ div.textContent.replace(/((\d\d)\.(\d\d)\.(\d\d\d\d))|(\r\t|\r|\t)/gm, "").replace(/(\n)/gm, "<br>").trim() ]);
             }
-
-            let dateSplit = dataObj['newsDate'].split('.');
-
-            dataObj['newsDate'] = dateSplit[0] + " " + MONTHS[dateSplit[1]] + " " + dateSplit[2];
             
-            
+    
 			dataObj['url'] = link;
 			resolve(dataObj);
 			await newPage.close();
