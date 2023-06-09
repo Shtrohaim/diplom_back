@@ -1,10 +1,12 @@
 import mysql from "mysql2";
 
 const connection = mysql.createConnection({
-    host: "containers-us-west-107.railway.app",
+    host: "containers-us-west-74.railway.app",
     user: "root",
     database: "railway",
-    password: "CV1ezFLW2IcROLcmSNqo"
+    password: "kbHL5IVaAlMvxI2HoXzV",
+    port: 5599,
+    connectTimeout: 60000
   });
 
   connection.connect(function(err){
