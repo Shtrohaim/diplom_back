@@ -28,7 +28,7 @@ const scraperObject = {
                 timeout: 0
             });
 			dataObj['newsTittle'] = await newPage.$eval('.op_news b', text => text.textContent.replace(/(\r\n\t|\n|\r|\t)/gm, "").trim());
-			dataObj['newsDate'] = await newPage.$$eval('.op_news td span', text => text[2].textContent);
+			dataObj['newsDate'] = await newPage.$$eval('.op_news td > span', text => text[2].textContent);
 
 	        dataObj['imageUrl'] = await newPage.$$eval('.op_news td tt a', img => {
                 img = img.map(el => el.href);

@@ -3,7 +3,10 @@ import db from '../modules/database/connection.js';
 const getEgeInfo = async () => {
     return new Promise((resolve, reject) => {
         db.connection.query(`SELECT * FROM fipi_ege;`, function (err, result, fields) {
-            if (err) reject(`ERROR: ${err}`);
+            if (err) {
+                reject(`ERROR: ${err}`);
+                return
+            }
             resolve(result);
         });
     });
@@ -12,7 +15,10 @@ const getEgeInfo = async () => {
 const getOgeInfo  = async () => {
     return new Promise((resolve, reject) => {
         db.connection.query(`SELECT * FROM fipi_oge;`, function (err, result, fields) {
-            if (err) reject(`ERROR: ${err}`);
+            if (err) {
+                reject(`ERROR: ${err}`);
+                return
+            }
             resolve(result);
         });
     });

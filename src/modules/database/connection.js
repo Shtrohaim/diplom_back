@@ -1,10 +1,10 @@
 import mysql from "mysql2";
 
 const connection = mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    database: "diplom_db",
-    password: "rootpw"
+    host: "bidgnranhpx685wfq8ov-mysql.services.clever-cloud.com",
+    user: "uuvwhsjagostxvbf",
+    database: "bidgnranhpx685wfq8ov",
+    password: "sOtIClA3OS2VxOXLKD6i"
   });
 
   connection.connect(function(err){

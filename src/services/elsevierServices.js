@@ -1,15 +1,54 @@
 import request from "request";
 
 const API_KEY = 'b0945bf621784946be4446031458e9eb'
-  
+
+const typeTranslator = (type) => {
+    switch (type) {
+        case 'tradejournal':
+            return 'Ревю'
+        case 'journal':
+            return 'Журнал'
+        case 'conferenceproceeding':
+           return 'Материалы конференции'
+        case 'bookseries':
+            return 'Серия книг'
+    }
+}
+const subtypeTranslator = (subtypeDescription) => {
+        switch (subtypeDescription) {
+            case 'Article':
+                return 'Статья'
+            case 'Abstract Report':
+              return  'Выдержка из доклада'
+            case 'Book':
+                return  'Книга'
+            case 'Business Article':
+                return  'Бизнес статья'
+            case 'Book Chapter':
+                return 'Глава книги'
+            case 'Conference Paper':
+                return 'Материал конференции'
+            case 'Conference Review':
+               return  'Отзыв конференции'
+            case 'Editorial':
+                return  'Редакция'
+            case 'Erratum':
+                return  'Исправление'
+            case 'Letter':
+                return  'Письмо'
+            case 'Note':
+               return  'Заметка'
+            case 'Press Release':
+                return  'Пресс-релиз'
+            case 'Review':
+                return  'Отзыв'
+            case 'Short Survey':
+                return  'Краткий обзор'
+        }
+}
+
 
 const getScopusDataList = async (query) => {
-    // 'search={field: "aaaaa", type: "ALL"}'
-    // 'filter={doctype: [], openaccess: null, SRCTYPE: [] , ... , PUBYEAR: {year: 2023, operator: more}}'
-
-    // searchParams = ["ALL","DOI","ISSN", "EISSN", "AUTHOR-NAME", "PUBLISHER"]
-    // filterParams = ['DOCTYPE', 'OPENACCESS', 'SRCTYPE', 'SUBJAREA', "PUBYEAR"]
-
     let encode = `${query["search"]["type"]}(${query["search"]["field"]})`
 
     if(query["filter"]) {
@@ -35,6 +74,7 @@ const getScopusDataList = async (query) => {
             }
         }
     }
+
     return new Promise((resolve, reject) => {
         let data = {}
         let {limit, offset} = query;
@@ -46,10 +86,16 @@ const getScopusDataList = async (query) => {
         }
 
         request(options, (error, response, body) => {
-            if (error) reject(`ERROR: ${error}`);
-
-            data['currentPage'] = Number(body['search-results']['opensearch:startIndex']) + 1
-            data['totalItems'] = Number(body['search-results']['opensearch:totalResults'])
+            if (body?.['service-error']){
+                reject(`ERROR: ${body['service-error']['status']['statusText']}`);
+                return
+            }
+            if(error){
+                reject(`ERROR: ${error.code}`)
+                return
+            }
+            data['currentPage'] = Number(body?.['search-results']?.['opensearch:startIndex']) + 1
+            data['totalItems'] = Number(body?.['search-results']?.['opensearch:totalResults'])
             data['totalPages'] = Math.ceil(data['totalItems'] / limit);
             if(data['totalPages'] > 5000 - limit){
                 data['totalPages'] = 5000 - limit
@@ -57,7 +103,7 @@ const getScopusDataList = async (query) => {
             }
             data['data'] = []
        
-            for (const [key, value] of Object.entries(body['search-results']['entry'])) {
+            for (const [key, value] of Object.entries(body?.['search-results']?.['entry'])) {
                 let items = {}
 
                 items['title'] = value['dc:title']
@@ -71,11 +117,13 @@ const getScopusDataList = async (query) => {
                 items['doi'] = value['prism:doi']
                 items['citedby-count'] = value['citedby-count']
                 items['aggregationType'] = value['prism:aggregationType']
-                items['subtypeDescription'] = value['subtypeDescription']
+                items['subtypeDescription'] = subtypeTranslator(value['subtypeDescription'])
                 items['openaccessFlag'] = value['openaccessFlag']
                 items['affiliation'] = value['affiliation']
 
-                data['data'].push(items)
+                if(items['issn'] || items['eIssn']) {
+                    data['data'].push(items)
+                }
             }      
             resolve(data)
         });
@@ -93,7 +141,21 @@ const getPublisherInfo  = async (issn) => {
         let data = {}
     
         request(options, (error, response, body) => {
-            if (error) reject(`ERROR: ${error}`);
+            if (body?.['service-error']){
+                reject(`ERROR: ${body['service-error']['status'][' statusText']}`);
+                return
+            }
+
+            if(error){
+                reject(`ERROR: ${error.code}`)
+                return
+            }
+
+            if (body?.['serial-metadata-response']?.['error']){
+                reject(`ERROR: ${body['serial-metadata-response']['error']}`);
+                return
+            }
+
 
             let res = body["serial-metadata-response"]["entry"][0]
 
@@ -101,7 +163,7 @@ const getPublisherInfo  = async (issn) => {
             data['publisher'] = res['dc:publisher']
             data['coverageStartYear'] = res['coverageStartYear']
             data['coverageEndYear'] = res['coverageEndYear']
-            data['aggregationType'] = res['prism:aggregationType']
+            data['aggregationType'] = typeTranslator(res['prism:aggregationType'])
             data['issn'] = res['prism:issn']
             data['eIssn'] = res['prism:eIssn']
             data['openaccess'] = res['openaccess']

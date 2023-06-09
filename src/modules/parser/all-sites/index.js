@@ -1,4 +1,4 @@
-export { default as adygeya } from './getAdygeaMNO.js';
+// export { default as adygeya } from './getAdygeaMNO.js';
 export { default as bashk } from './getBashkMNO.js';
 export { default as buryat } from './getBuryatMNO.js';
 export { default as dag } from './getDagMNO.js';

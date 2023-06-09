@@ -1,7 +1,7 @@
 import db from './connection.js';
 
 export default function createTable(data, tableName){
-    data.forEach(el => {
+    data.forEach( el => {
         let jsonDesc = {};
         let i = 0;
 
@@ -12,9 +12,8 @@ export default function createTable(data, tableName){
             }
         });
         jsonDesc = JSON.stringify(jsonDesc).replace(/(\\)/gm, "");
-       db.connection.query(`INSERT INTO ${tableName} (title, description, image_url, date, url) VALUES ('${el.newsTittle}' , '${jsonDesc}' , '${JSON.stringify(el.imageUrl)}' , '${el.newsDate}' , '${el.url}')`);
+        db.connection.query(`INSERT INTO ${tableName} (title, description, image_url, date, url) VALUES ('${el.newsTittle}' , '${jsonDesc}' , '${JSON.stringify(el.imageUrl)}' , '${el.newsDate}' , '${el.url}')`);
+
     });
-   
-		
 
 }

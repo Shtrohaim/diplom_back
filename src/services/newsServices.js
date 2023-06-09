@@ -13,7 +13,10 @@ const getRegionNewsList  = async (tableName, query) => {
     }
     return new Promise((resolve, reject) => {
         db.connection.query(`SELECT SQL_CALC_FOUND_ROWS * FROM ${tableName} WHERE title LIKE '%${search}%' ORDER BY id DESC  LIMIT ${limit} OFFSET ${offset}`, function (err, result, fields) {
-            if (err) reject('ERROR: Неправильное имя таблицы!');
+            if (err){
+                reject('ERROR: Неправильное имя таблицы!');
+                return
+            }
 
             db.connection.query(`SELECT FOUND_ROWS();`, function (err, res, fields) {
                 const news = {}
@@ -60,7 +63,10 @@ const getRegionNews = async (tableName, id) => {
     }
     return new Promise((resolve, reject) => {
         db.connection.query(`SELECT * FROM ${tableName} WHERE id=${id};`, function (err, result, fields) {
-            if (err) reject("ERROR: Неправильное имя таблицы или id!");
+            if (err){
+                reject('ERROR: Неправильное имя таблицы или id!');
+                return
+            }
             resolve(result);
         });
     });
@@ -69,7 +75,10 @@ const getRegionNews = async (tableName, id) => {
 const getAllRegions  = async () => {
     return new Promise((resolve, reject) => {
         db.connection.query(`SELECT * FROM all_regions;`, function (err, result, fields) {
-            if (err) reject("ERROR: Были отправлены неправильные данные!");
+            if (err) {
+                reject("ERROR: Были отправлены неправильные данные!");
+                return
+            }
             resolve(result);
         });
     });
