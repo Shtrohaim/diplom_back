@@ -1,5 +1,5 @@
 import express from 'express';
-import mysqlAdmin from 'node-mysql-admin';
+// import mysqlAdmin from 'node-mysql-admin';
 import startBrowser  from './src/modules/parser/startBrowser.js';
 import scraperController from './src/controllers/pageController.js';
 import fipiScraper from './src/controllers/fipiBrowserController.js';
@@ -9,7 +9,7 @@ import cors from 'cors'
 const app = express()
 const port = process.env.PORT || 3000
 
-app.use(mysqlAdmin(app));
+// app.use(mysqlAdmin(app));
 app.use(express.json())
 
 app.use(cors());
@@ -40,7 +40,7 @@ const ParsingActivate = () => {
 // ParsingActivate()
 
 
-setInterval(ParsingActivate, 7200000)
+// setInterval(ParsingActivate, 7200000)
 
 
  app.listen(port, () => {
