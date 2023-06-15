@@ -1,5 +1,6 @@
 import express from 'express';
 // import mysqlAdmin from 'node-mysql-admin';
+import path from 'path'
 import startBrowser  from './src/modules/parser/startBrowser.js';
 import scraperController from './src/controllers/pageController.js';
 import fipiScraper from './src/controllers/fipiBrowserController.js';
