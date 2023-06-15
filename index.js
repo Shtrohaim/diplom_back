@@ -18,6 +18,7 @@ app.use(cors());
 app.use('/api', api)
 app.use('/img', express.static('./src/data/img/emblems/'))
 
+console.log(1)
 
 const UpdateFipiInfo = () => {
    let browserInstance = startBrowser.startBrowser();
