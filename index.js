@@ -17,7 +17,6 @@ app.use(cors());
 
 app.use('/api', api)
 app.use('/img', express.static('./src/data/img/emblems/'))
-app.get('/img', (req, res) => res.send('<h1 style="color:blue;">Test</h1> <img src="./src/data/img/emblems/adygeya.svg" />'));
 
 
 const UpdateFipiInfo = () => {
