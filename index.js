@@ -36,11 +36,11 @@ const ParsingActivate = () => {
    }
 }
 
-// UpdateFipiInfo()
-// ParsingActivate()
+UpdateFipiInfo()
+ParsingActivate()
 
 
-// setInterval(ParsingActivate, 7200000)
+setInterval(ParsingActivate, 7200000)
 
 
  app.listen(port, () => {
