@@ -17,7 +17,7 @@
         },
         {
             "src": "/(.+)",
-            "dest": "src/data/img/emblems/$1"
+            "dest": "src/data/img/emblems/**"
         }
     ]
 }
