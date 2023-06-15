@@ -16,8 +16,8 @@
             "dest": "/"
         },
         {
-            "src": "/(.+)",
-            "dest": "src/data/img/emblems/**"
+            "src": "/img",
+            "dest": "./src/data/img/emblems/adygeya.svg"
         }
     ]
 }
