@@ -20,8 +20,8 @@
             "dest": "src/index.html"
         },
         {
-            "src": "/(.+)",
-            "dest": "src/$1"
+            "src": "img/(.+)",
+            "dest": "src/data/img/emblems/$1"
         }
     ]
 }
