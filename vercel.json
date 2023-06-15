@@ -16,10 +16,6 @@
             "dest": "index.js"
         },
         {
-            "src": "/",
-            "dest": "src/index.html"
-        },
-        {
             "src": "/(.+)",
             "dest": "src/data/img/emblems/$1"
         }
