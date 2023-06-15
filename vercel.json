@@ -20,7 +20,7 @@
             "dest": "src/index.html"
         },
         {
-            "src": "image/(.+)",
+            "src": "/(.+)",
             "dest": "src/data/img/emblems/$1"
         }
     ]
