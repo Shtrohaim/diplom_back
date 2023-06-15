@@ -17,7 +17,7 @@
         },
         {
             "src": "/img",
-            "dest": "./src/data/img/emblems/adygeya.svg"
+            "dest": "src/data/img/emblems/adygeya.svg"
         }
     ]
 }
